@@ -1,5 +1,10 @@
 on:
   workflow_call:
+    inputs:
+      translation_directory:
+        description: directory babel translations reside in, passed to pybabel compile --directory=...
+        required: false
+        type: string
 
 jobs:
   build-n-publish:
@@ -16,10 +21,15 @@ jobs:
           pip install --upgrade setuptools wheel
           pip install --upgrade babel build
       - name: Compile translations
+        env:
+          TRANSLATION_DIRECTORY: ${{inputs.translation_directory}}
         run: |
-          if grep -q "compile_catalog" setup.cfg
+          if [[ -f setup.cfg ]] && grep -q "compile_catalog" setup.cfg
           then
             python setup.py compile_catalog
+          elif [[ -n "$TRANSLATION_DIRECTORY" ]]
+          then
+            pybabel compile --directory="$TRANSLATION_DIRECTORY" --use-fuzzy
           fi
       - name: Build package
         run: |
