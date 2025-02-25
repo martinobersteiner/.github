@@ -13,7 +13,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install --upgrade setuptools wheel babel
+          pip install --upgrade setuptools wheel
+          pip install --upgrade babel
       - name: Build package
         run: |
           if grep -q "compile_catalog" setup.cfg
